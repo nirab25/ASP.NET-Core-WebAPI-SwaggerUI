@@ -1,6 +1,6 @@
 # ASP.NET Core WebAPI with SwaggerUI
 
-ASP.NET Core Web API example with SwaggerUI. This project includes sample GET and POST api with versioning.
+ASP.NET Core Web API example with SwaggerUI. This project includes sample GET, POST and PUT request with versioning. 
 
 ![SwaggerUI Example](SwaggerUI.JPG)
 
