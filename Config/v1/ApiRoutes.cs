@@ -13,9 +13,13 @@ namespace AspDotNetCoreWebAPISwaggerUI.Config.v1
 
         public static class Products
         {
+            public const string Retrieve = Base + "/products/{productID}";
             public const string GetAllProducts = Base + "/products";
+            
             public const string Save = Base + "/products/{productID}";
-            public const string SaveAllProducts = Base + "/products";
+
+            public const string Update = Base + "/products/{productID}";
+            public const string Delete = Base + "/products/{productID}";
         }
     }
 }

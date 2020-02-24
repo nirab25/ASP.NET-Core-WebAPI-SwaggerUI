@@ -4,42 +4,72 @@ using System.Linq;
 using System.Threading.Tasks;
 using AspDotNetCoreWebAPISwaggerUI.Config.v1;
 using AspDotNetCoreWebAPISwaggerUI.Models;
+using AspDotNetCoreWebAPISwaggerUI.Models.v1.Requests;
 using AspDotNetCoreWebAPISwaggerUI.Models.v1.Responses;
+using AspDotNetCoreWebAPISwaggerUI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspDotNetCoreWebAPISwaggerUI.Controllers
 {
     public class ProductController : Controller
     {
-        private List<ProductRequest> products;
-
-        public ProductController()
+        private readonly  IProductService productService;
+        public ProductController(IProductService pService)
         {
-            products = new List<ProductRequest>();
-            for (var i = 0; i < 5; i++)
-            {
-                products.Add(new ProductRequest { ProductID = Guid.NewGuid().ToString(),
-                    ProductCode = "CODE" + i, ProductName = "Product" + i 
-                });
-            }
+            productService = pService;
         }
 
         [HttpGet(ApiRoutes.Products.GetAllProducts)]
         public IActionResult GetAllProducts()
         {
-            return Ok(products);
+            return Ok(productService.GetProducts());
         }
 
-        [HttpPost(ApiRoutes.Products.SaveAllProducts)]
-        public IActionResult SaveAllProducts([FromBody] ProductRequest product)
+        [HttpGet(ApiRoutes.Products.Retrieve)]
+        public IActionResult GetProduct([FromRoute] Guid productID)
         {
-            if (string.IsNullOrEmpty(product.ProductID))
-                product.ProductID = Guid.NewGuid().ToString();
+            var product = productService.GetProductByID(productID);
 
-            products.Add(product);
+
+            if (product == null)
+                return NotFound("Requested product not found!");
+
+            return Ok(product);
+        }
+
+        [HttpPut(ApiRoutes.Products.Update)]
+        public IActionResult UpdateProduct([FromRoute] Guid productID, [FromBody] UpdateProductRequest request)
+        {
+            var product = new Product
+            {
+                ProductID = productID,
+                ProductCode = request.ProductCode,
+                ProductName = request.ProductName
+            };
+
+            if(!productService.UpdayteProduct(product))
+                return NotFound("Requested product not found!");
+
+            return Ok(product);
+        }
+
+        [HttpPost(ApiRoutes.Products.Save)]
+        public IActionResult SaveProduct([FromBody] ProductRequest productRequest)
+        {
+            if (productRequest.ProductID == null)
+                productRequest.ProductID = Guid.NewGuid();
+
+            Product product = new Product
+            {
+                ProductID = productRequest.ProductID,
+                ProductCode = productRequest.ProductCode,
+                ProductName = productRequest.ProductName
+            };
+
+            productService.GetProducts().Add(product);
 
             var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-            var locationUrl = baseUrl + "/" + ApiRoutes.Products.Save.Replace("{ProductID}", product.ProductID);
+            var locationUrl = baseUrl + "/" + ApiRoutes.Products.Save.Replace("{ProductID}", product.ProductID.ToString());
 
             var response = new ProductResponse
             {

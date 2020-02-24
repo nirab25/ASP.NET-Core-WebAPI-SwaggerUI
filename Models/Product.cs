@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AspDotNetCoreWebAPISwaggerUI.Models.v1.Responses
+namespace AspDotNetCoreWebAPISwaggerUI.Models
 {
-    public class ProductResponse
+    public class Product
     {
         public Guid ProductID { get; set; }
         public string ProductCode { get; set; }
